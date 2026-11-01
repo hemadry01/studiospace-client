@@ -88,7 +88,7 @@ const LoginPage = () => {
                   <Button type="submit">Login</Button>
                   <FieldDescription className="text-center">
                     Don&apos;t have an account?{" "}
-                    <Link href="/signup">Signup</Link>
+                    <Link href="/sign-up">Signup</Link>
                   </FieldDescription>
                 </Field>
               </FieldGroup>
