@@ -13,6 +13,7 @@ const Navbar = () => {
     { name: "Explore Studio", href: "/explore" },
     { name: "How It Works", href: "/how-it-works" },
     { name: "About Us", href: "/about" },
+    { name: "Add Studio", href: "/add-studio" },
   ];
 
   return (

@@ -29,29 +29,29 @@ export default function SignUp() {
 
   const passwordMatch = password === confirmPassword;
 
-  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
       alert("Password and Confirm Password do not match!");
       return;
     }
-    const formData = new FormData(e.target);
+    const formData = new FormData(e.currentTarget);
     const user = Object.fromEntries(formData.entries()) as {
       name: string;
       image: string;
       email: string;
       password: string;
-    }; 
+    };
     //console.log("User data:", user);
 
-    const {data,error} = await authClient.signUp.email({
+    const { data, error } = await authClient.signUp.email({
       ...user,
-    })
-    if(data){
+    });
+    if (data) {
       console.log("User signed up successfully:", data);
     }
-    if(error){
+    if (error) {
       console.error("Error signing up user:", error);
     }
   };
