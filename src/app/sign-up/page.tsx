@@ -20,6 +20,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
+import { redirect } from "next/navigation";
 
 export default function SignUp() {
   const [password, setPassword] = useState("");
@@ -50,6 +51,7 @@ export default function SignUp() {
     });
     if (data) {
       console.log("User signed up successfully:", data);
+      redirect("/");
     }
     if (error) {
       console.error("Error signing up user:", error);

@@ -4,8 +4,33 @@ import React, { useState } from "react";
 import Logo from "@/assets/logo.png";
 import Image from "next/image";
 import Link from "next/link";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { authClient } from "@/lib/auth-client";
+import { Button } from "@/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverDescription,
+  PopoverHeader,
+  PopoverTitle,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 const Navbar = () => {
+
+  const {data: session} = authClient.useSession();
+
+  const user = session?.user;
+  console.log("User data:", user);
+
+  const handleSignOut = async () => {
+    try {
+      await authClient.signOut();
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
+
   const [isOpen, setIsOpen] = useState(false);
 
   const navLinks = [
@@ -54,19 +79,98 @@ const Navbar = () => {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden lg:flex items-center gap-3">
-            <Link
-              href="/login"
-              className="px-5 py-2.5 text-sm font-semibold text-gray-700 transition-colors duration-300 hover:text-violet-600"
-            >
-              Login
-            </Link>
+            {user ? (
+              <Popover>
+                <PopoverTrigger
+                  render={
+                    <button
+                      type="button"
+                      className="rounded-full outline-none focus-visible:ring-2 focus-visible:ring-violet-600"
+                      aria-label="Open profile menu"
+                    />
+                  }
+                >
+                  <Avatar className="cursor-pointer">
+                    <AvatarImage
+                      referrerPolicy="no-referrer"
+                      src={user?.image || ""}
+                      alt={user?.name || "User"}
+                    />
+                    <AvatarFallback>
+                      {user?.name?.charAt(0).toUpperCase() || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                </PopoverTrigger>
 
-            <Link
-              href="/sign-up"
-              className="px-6 py-3 rounded-full bg-violet-600 text-sm font-semibold text-white shadow-md shadow-violet-200/60 transition-all duration-300 hover:bg-violet-700 hover:shadow-lg hover:-translate-y-0.5"
-            >
-              Sign Up
-            </Link>
+                <PopoverContent align="end" className="w-64">
+                  <PopoverHeader>
+                    <PopoverTitle>{user?.name}</PopoverTitle>
+                    <PopoverDescription>{user?.email}</PopoverDescription>
+                  </PopoverHeader>
+
+                  <div className="flex flex-col gap-1 py-2">
+                    <Link
+                      href="/profile"
+                      className="rounded-md px-3 py-2 text-sm hover:bg-muted"
+                    >
+                      My Profile
+                    </Link>
+
+                    <Link
+                      href="/add-studio"
+                      className="rounded-md px-3 py-2 text-sm font-medium  hover:text-violet-600"
+                    >
+                      + Add Studio
+                    </Link>
+                    <Link
+                      href="/add-studio"
+                      className="rounded-md px-3 py-2 text-sm font-medium  hover:text-violet-600"
+                    >
+                      My Studio Listings
+                    </Link>
+                    <Link
+                      href="/add-studio"
+                      className="rounded-md px-3 py-2 text-sm font-medium  hover:text-violet-600"
+                    >
+                      My Bookings
+                    </Link>
+
+                    <Link
+                      href="/settings"
+                      className="rounded-md px-3 py-2 text-sm hover:bg-muted"
+                    >
+                      Settings
+                    </Link>
+                  </div>
+
+                  <div className="border-t pt-3">
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      className="w-full"
+                      onClick={handleSignOut}
+                    >
+                      Sign Out
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="px-5 py-2.5 text-sm font-semibold text-gray-700 transition-colors duration-300 hover:text-violet-600"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/sign-up"
+                  className="px-6 py-3 rounded-full bg-violet-600 text-sm font-semibold text-white shadow-md shadow-violet-200/60 transition-all duration-300 hover:bg-violet-700 hover:shadow-lg hover:-translate-y-0.5"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}

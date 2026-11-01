@@ -16,10 +16,34 @@ import {
   FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import React from "react";
 const LoginPage = () => {
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // Handle login logic here
+    const formData = new FormData(e.currentTarget);
+    const user = Object.fromEntries(formData.entries()) as {
+      email: string;
+      password: string;
+    };
+
+    console.log("User data:", user);
+    const {data,error} = await authClient.signIn.email({
+      ...user,
+    })
+    if(data){
+      console.log("User signed in successfully:", data);
+      redirect("/");
+    }
+    if(error){
+      console.error("Error signing in user:", error);
+    }
+  };
+
     return (
       <div className="flex flex-col gap-6 max-w-6x mx-auto my-10">
         <Card>
@@ -30,7 +54,7 @@ const LoginPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form>
+            <form onSubmit={handleSubmit}>
               <FieldGroup>
                 <Field>
                   <Button variant="outline" type="button">
