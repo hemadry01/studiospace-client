@@ -18,17 +18,41 @@ import {
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import React, { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
 
 export default function SignUp() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const passwordMatch = password === confirmPassword;
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
     if (password !== confirmPassword) {
-      e.preventDefault();
       alert("Password and Confirm Password do not match!");
+      return;
+    }
+    const formData = new FormData(e.target);
+    const user = Object.fromEntries(formData.entries()) as {
+      name: string;
+      image: string;
+      email: string;
+      password: string;
+    }; 
+    //console.log("User data:", user);
+
+    const {data,error} = await authClient.signUp.email({
+      ...user,
+    })
+    if(data){
+      console.log("User signed up successfully:", data);
+    }
+    if(error){
+      console.error("Error signing up user:", error);
     }
   };
 
@@ -102,28 +126,40 @@ export default function SignUp() {
                   name="email"
                   placeholder="m@example.com"
                   required
-                  pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
+                  pattern="[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}"
                   title="Please enter a valid email address (e.g. name@example.com)"
                 />
               </Field>
 
               <Field>
-                <div className="flex items-center">
-                  <FieldLabel htmlFor="password">Password</FieldLabel>
-                </div>
+                <FieldLabel htmlFor="password">Password</FieldLabel>
 
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  placeholder="Password"
-                  required
-                  minLength={6}
-                  pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{6,}"
-                  title="Password must be at least 6 characters and include uppercase, lowercase, number, and special character."
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
+                <div className="relative">
+                  <Input
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Password"
+                    required
+                    minLength={6}
+                    pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{6,}"
+                    title="Password must be at least 6 characters and include uppercase, lowercase, number, and special character."
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pr-10"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800"
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
+                  >
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
               </Field>
 
               {/* Confirm Password Field */}
@@ -132,16 +168,34 @@ export default function SignUp() {
                   Confirm Password
                 </FieldLabel>
 
-                <Input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  placeholder="Confirm Password"
-                  required
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  aria-invalid={confirmPassword.length > 0 && !passwordMatch}
-                />
+                <div className="relative">
+                  <Input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Confirm Password"
+                    required
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    aria-invalid={confirmPassword.length > 0 && !passwordMatch}
+                    className="pr-10"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800"
+                    aria-label={
+                      showConfirmPassword ? "Hide password" : "Show password"
+                    }
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff size={20} />
+                    ) : (
+                      <Eye size={20} />
+                    )}
+                  </button>
+                </div>
 
                 {confirmPassword.length > 0 && !passwordMatch && (
                   <p className="text-sm text-red-500">
