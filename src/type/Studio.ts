@@ -12,4 +12,6 @@ export interface IStudio {
   ownerEmail: string;
   rating?: number;
   reviews?: number;
+  images?: string[];
+  timeSlots?: string[];
 }

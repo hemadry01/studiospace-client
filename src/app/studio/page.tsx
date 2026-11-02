@@ -5,7 +5,7 @@ import { Suspense } from "react";
 const StudioContent = async () => {
   let studiodata: IStudio[] = [];
   try{
-   const res = await fetch("http://localhost:8000/all-studios");
+   const res = await fetch("http://localhost:8000/studios");
    if (!res.ok) {
           throw new Error("Faild to fatch data");
       }
@@ -33,12 +33,5 @@ const StudioContent = async () => {
     </div>
   );
 }
- const AllStudioPage = () => {
-   return (
-     <Suspense fallback={<p className="p-10">Loading studios...</p>}>
-       <StudioContent />
-     </Suspense>
-   );
- };
 
-export default AllStudioPage;
+export default StudioContent;
