@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import {
     CameraIcon,
     LinkIcon,
@@ -128,7 +128,10 @@ function AddStudioPage() {
     });
 
     const data = await res.json();
-    console.log("Response from backend:", data);
+    if(res.ok){
+        console.log("Response from backend:", data);
+        redirect("/");
+    }
   };
 
   return (

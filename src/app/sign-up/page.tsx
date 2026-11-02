@@ -113,7 +113,7 @@ export default function SignUp() {
                 <FieldLabel htmlFor="image">ImageURL</FieldLabel>
                 <Input
                   id="image"
-                  type="url"
+                  type="file"
                   name="image"
                   placeholder="Image URL"
                   required
