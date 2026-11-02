@@ -13,7 +13,8 @@ import {
 } from "@/components/ui/select";
 import { Check, MapPin, Pencil, ShieldCheck, Star, Users } from "lucide-react";
 import { format } from "date-fns";
-import { useState } from "react";
+import React, { useState } from "react";
+import { authClient } from "@/lib/auth-client";
 
 interface IStudioDetailsProps {
   studio: IStudio;
@@ -48,7 +49,8 @@ const StudioDetails = ({ studio }: IStudioDetailsProps) => {
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [bookingSummary, setBookingSummary] = useState<string | null>(null);
-  const [bookingError, setBookingError] = useState("");
+  const [bookingDateError, setBookingDateError] = useState("");
+  const [bookingTimeError, setBookingTimeError] = useState("");
 
   const thumbnailImages = (studio.images ?? []).slice(0, 4);
   const mainImageLabel = GALLERY_LABELS[0];
@@ -59,38 +61,128 @@ const StudioDetails = ({ studio }: IStudioDetailsProps) => {
       : 0;
   const totalPrice = bookingHours * studio.hourlyRate;
 
+  const todayMinDate = format(new Date(), "yyyy-MM-dd");
+
+  const validateBooking = (date: string, start: string, end: string) => {
+    let dateError = "";
+    let timeError = "";
+
+    if (!date) {
+      dateError = "Please choose a booking date.";
+    } else if (date < format(new Date(), "yyyy-MM-dd")) {
+      dateError = "The booking date cannot be in the past.";
+    }
+
+    if (!start) {
+      timeError = "Please select a start time.";
+    } else if (!end) {
+      timeError = "Please select an end time.";
+    } else if (
+      Number(end.split(":")[0]) <= Number(start.split(":")[0])
+    ) {
+      timeError = "The end time must be after the start time.";
+    }
+
+    return { dateError, timeError };
+  };
+
+  const validateAndApply = (next: {
+    date: string;
+    start: string;
+    end: string;
+  }) => {
+    const { dateError, timeError } = validateBooking(
+      next.date,
+      next.start,
+      next.end
+    );
+    setBookingDateError(dateError);
+    setBookingTimeError(timeError);
+  };
+
   const handleDateChange = (value: string) => {
     setSelectedDate(value);
     setBookingSummary(null);
-    setBookingError("");
+    validateAndApply({ date: value, start: startTime, end: endTime });
   };
 
-  const handleChangeTime = (
-    setter: (value: string) => void,
-    value: string | null
-  ) => {
+  const handleStartTimeChange = (value: string | null) => {
     if (!value) return;
-    setter(value);
+    setStartTime(value);
     setBookingSummary(null);
-    setBookingError("");
+    validateAndApply({ date: selectedDate, start: value, end: endTime });
+  };
+
+  const handleEndTimeChange = (value: string | null) => {
+    if (!value) return;
+    setEndTime(value);
+    setBookingSummary(null);
+    validateAndApply({ date: selectedDate, start: startTime, end: value });
   };
 
   const handleBook = () => {
-    if (!selectedDate || !startTime || !endTime) {
-      setBookingError("Please choose a date and a start/end time first.");
+    const { dateError, timeError } = validateBooking(
+      selectedDate,
+      startTime,
+      endTime
+    );
+    if (dateError || timeError) {
+      setBookingDateError(dateError);
+      setBookingTimeError(timeError);
+      setBookingSummary(null);
       return;
     }
-    if (bookingHours <= 0) {
-      setBookingError("The end time must be after the start time.");
-      return;
-    }
-    setBookingError("");
     setBookingSummary(
       `Booked ${bookingHours} ${bookingHours === 1 ? "hour" : "hours"} on ${format(
         new Date(selectedDate),
         "MMM d, yyyy"
       )} · $${totalPrice} — confirmation sent to ${studio.ownerEmail}.`
     );
+  };
+
+   const { data: session } = authClient.useSession();
+   const user = session?.user;
+
+  const handleSubmitBooking = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // Validate fields
+    if (!selectedDate || !startTime || !endTime) {
+      //toast.error("Please select date and time");
+      return;
+    }
+    // Prepare booking data
+    const data = {
+      studioId: studio._id,
+      studioTitle: studio.title,
+      username: user?.name,
+      email: user?.email,
+      bookingDate: selectedDate,
+      startTime,
+      endTime,
+      ...studio,
+      totalHours: bookingHours,
+      hourlyRate: studio.hourlyRate,
+      securityDeposit: studio.securityDeposit,
+      totalAmount: totalPrice + studio.securityDeposit,
+      status: "pending",
+      createdAt: new Date(),
+    };
+    try{
+      const res = await fetch("http://localhost:8000/my-bookings",{
+        method:"POST",
+        headers:{
+          'Content-type':'application/json'
+        },
+        body:JSON.stringify(data)
+      })
+      const bookingData= await res.json();
+      if (!res.ok) {
+        throw new Error(bookingData.message || "Booking failed");
+      }
+      console.log("Saved booking:",bookingData)
+    }catch(e){
+      console.error(e);
+    }
   };
 
   return (
@@ -134,10 +226,9 @@ const StudioDetails = ({ studio }: IStudioDetailsProps) => {
           </Button>
         </div>
       </div>
-      {/* Top action bar — Edit (placeholder for now) */}
 
       {/* Gallery: single full-width image, or main image + 2x2 thumbnails */}
-      <div className="mt-6 mx-auto max-w-6xl md:grid-cols-[2fr_1fr]">
+      <div className="mt-6 grid gap-3 md:grid-cols-[2fr_1fr]">
         <div
           className={
             thumbnailImages.length
@@ -211,98 +302,118 @@ const StudioDetails = ({ studio }: IStudioDetailsProps) => {
             )}
           </section>
         </div>
-
-        <Card className="h-fit gap-4 bg-indigo-50/80 ring-indigo-200/70 dark:bg-indigo-950/40">
-          <CardContent className="flex flex-col gap-3">
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-3xl font-bold text-violet-600 dark:text-violet-400">
-                ${studio.hourlyRate}
-              </span>
-              <span className="text-sm text-muted-foreground">/ hour</span>
-            </div>
-
-            <p className="text-sm font-medium">Select date and hours</p>
-
-            <Input
-              type="date"
-              aria-label="Booking date"
-              value={selectedDate}
-              onChange={(event) => handleDateChange(event.target.value)}
-            />
-
-            <div className="grid grid-cols-2 gap-2">
-              <Select
-                value={startTime}
-                onValueChange={(value) => handleChangeTime(setStartTime, value)}
-              >
-                <SelectTrigger className="w-full" aria-label="Start hour">
-                  <SelectValue placeholder="Start" />
-                </SelectTrigger>
-                <SelectContent>
-                  {HOUR_OPTIONS.slice(0, -1).map((hour) => (
-                    <SelectItem key={hour} value={hour}>
-                      {hour}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Select
-                value={endTime}
-                onValueChange={(value) => handleChangeTime(setEndTime, value)}
-              >
-                <SelectTrigger className="w-full" aria-label="End hour">
-                  <SelectValue placeholder="End" />
-                </SelectTrigger>
-                <SelectContent>
-                  {HOUR_OPTIONS.slice(1).map((hour) => (
-                    <SelectItem key={hour} value={hour}>
-                      {hour}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {bookingHours > 0 && selectedDate && (
-              <div className="flex items-center justify-between rounded-lg bg-white/70 px-3 py-2 text-sm dark:bg-background/60">
-                <span className="text-muted-foreground">
-                  {bookingHours} {bookingHours === 1 ? "hour" : "hours"}
+        <form onSubmit={handleSubmitBooking}>
+          <Card className="h-fit gap-4 bg-indigo-50/80 ring-indigo-200/70 dark:bg-indigo-950/40">
+            <CardContent className="flex flex-col gap-3">
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-3xl font-bold text-violet-600 dark:text-violet-400">
+                  ${studio.hourlyRate}
                 </span>
-                <span className="font-semibold">${totalPrice}</span>
+                <span className="text-sm text-muted-foreground">/ hour</span>
               </div>
-            )}
 
-            <Button
-              type="button"
-              className="h-10 w-full bg-violet-600 hover:bg-violet-700"
-              onClick={handleBook}
-            >
-              Book workspace now
-            </Button>
+              <p className="text-sm font-medium">Select date and hours</p>
 
-            {bookingError && (
-              <p className="text-xs text-destructive">{bookingError}</p>
-            )}
-            {bookingSummary && (
-              <p className="flex items-start gap-1.5 text-xs text-emerald-700 dark:text-emerald-400">
-                <Check className="mt-0.5 size-3.5 shrink-0" />
-                {bookingSummary}
-              </p>
-            )}
+              <div className="flex flex-col gap-1">
+                <Input
+                  type="date"
+                  aria-label="Booking date"
+                  aria-invalid={bookingDateError ? true : undefined}
+                  min={todayMinDate}
+                  value={selectedDate}
+                  onChange={(event) => handleDateChange(event.target.value)}
+                />
+                {bookingDateError && (
+                  <p className="text-xs text-destructive" role="alert">
+                    {bookingDateError}
+                  </p>
+                )}
+              </div>
 
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1">
-                <Users className="size-3.5" />
-                Up to {studio.maxCapacity} guests
-              </span>
-              <span className="flex items-center gap-1">
-                <ShieldCheck className="size-3.5" />${studio.securityDeposit}{" "}
-                security deposit
-              </span>
-            </div>
-          </CardContent>
-        </Card>
+              <div className="grid grid-cols-2 gap-2">
+                <Select
+                  value={startTime}
+                  onValueChange={(value) => handleStartTimeChange(value)}
+                >
+                  <SelectTrigger
+                    className="w-full"
+                    aria-label="Start hour"
+                    aria-invalid={bookingTimeError ? true : undefined}
+                  >
+                    <SelectValue placeholder="Start" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {HOUR_OPTIONS.slice(0, -1).map((hour) => (
+                      <SelectItem key={hour} value={hour}>
+                        {hour}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select
+                  value={endTime}
+                  onValueChange={(value) => handleEndTimeChange(value)}
+                >
+                  <SelectTrigger
+                    className="w-full"
+                    aria-label="End hour"
+                    aria-invalid={bookingTimeError ? true : undefined}
+                  >
+                    <SelectValue placeholder="End" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {HOUR_OPTIONS.slice(1).map((hour) => (
+                      <SelectItem key={hour} value={hour}>
+                        {hour}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {bookingTimeError && (
+                <p className="text-xs text-destructive" role="alert">
+                  {bookingTimeError}
+                </p>
+              )}
+
+              {bookingHours > 0 && selectedDate && (
+                <div className="flex items-center justify-between rounded-lg bg-white/70 px-3 py-2 text-sm dark:bg-background/60">
+                  <span className="text-muted-foreground">
+                    {bookingHours} {bookingHours === 1 ? "hour" : "hours"}
+                  </span>
+                  <span className="font-semibold">${totalPrice}</span>
+                </div>
+              )}
+
+              <Button
+                type="submit"
+                className="h-10 w-full bg-violet-600 hover:bg-violet-700"
+              >
+                Book workspace now
+              </Button>
+
+              {bookingSummary && (
+                <p className="flex items-start gap-1.5 text-xs text-emerald-700 dark:text-emerald-400">
+                  <Check className="mt-0.5 size-3.5 shrink-0" />
+                  {bookingSummary}
+                </p>
+              )}
+
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                <span className="flex items-center gap-1">
+                  <Users className="size-3.5" />
+                  Up to {studio.maxCapacity} guests
+                </span>
+                <span className="flex items-center gap-1">
+                  <ShieldCheck className="size-3.5" />${studio.securityDeposit}{" "}
+                  security deposit
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+        </form>
       </div>
     </div>
   );

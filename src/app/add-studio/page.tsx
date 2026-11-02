@@ -85,13 +85,6 @@ function AddStudioPage() {
     });
   };
 
-  const { data: session } = authClient.useSession();
-  const user = session?.user;
-
-  // Placeholder user — replaced by session data once auth is wired up.
-  const USER_NAME = user?.name;
-  const USER_EMAIL = user?.email;
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     // TODO: wire up to the studio API once the backend is available.
@@ -122,8 +115,6 @@ function AddStudioPage() {
         imageUrl,
         amenities: [...amenities],
         overview,
-        ownerName: USER_NAME,
-        ownerEmail: USER_EMAIL,
       }),
     });
 
@@ -343,29 +334,6 @@ function AddStudioPage() {
               required
             />
           </div>
-        </div>
-
-        {/* User read-only strip */}
-        <div className="mt-6 flex flex-col gap-4 rounded-xl bg-violet-50 p-4 sm:flex-row sm:items-center">
-          <div className="flex flex-1 items-center gap-3">
-            <UserIcon className="size-5 text-violet-600/50" />
-            <div>
-              <p className="text-xs text-muted-foreground">User Name</p>
-              <p className="font-semibold">{USER_NAME}</p>
-            </div>
-          </div>
-          <Separator orientation="vertical" className="hidden h-8 sm:block" />
-          <div className="flex flex-1 items-center gap-3">
-            <MailIcon className="size-5 text-violet-600/50" />
-            <div className="min-w-0">
-              <p className="text-xs text-muted-foreground">User Email</p>
-              <p className="truncate font-semibold">{USER_EMAIL}</p>
-            </div>
-          </div>
-          <Badge className="self-start bg-violet-600 sm:self-center">
-            <LockIcon />
-            Read-only
-          </Badge>
         </div>
 
         {/* Footer actions */}
