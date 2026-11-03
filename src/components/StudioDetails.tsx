@@ -15,6 +15,7 @@ import { Check, MapPin, Pencil, ShieldCheck, Star, Users } from "lucide-react";
 import { format } from "date-fns";
 import React, { useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import { redirect } from "next/navigation";
 
 interface IStudioDetailsProps {
   studio: IStudio;
@@ -168,13 +169,13 @@ const StudioDetails = ({ studio }: IStudioDetailsProps) => {
       createdAt: new Date(),
     };
     try{
-      const res = await fetch("http://localhost:8000/my-bookings",{
-        method:"POST",
-        headers:{
-          'Content-type':'application/json'
+      const res = await fetch("http://localhost:8000/my-bookings", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
         },
-        body:JSON.stringify(data)
-      })
+        body: JSON.stringify(data),
+      });
       const bookingData= await res.json();
       if (!res.ok) {
         throw new Error(bookingData.message || "Booking failed");

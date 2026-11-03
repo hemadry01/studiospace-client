@@ -1,18 +1,24 @@
-export type BookingStatus = "pending"| "confirmed"| "cancelled";
-
 export interface IBooking {
-  _id?: string;
+  _id: string;
   studioId: string;
-  customerName: string;
-  customerEmail: string;
+  studioTitle: string;
+  username: string;
+  email: string;
   bookingDate: string;
   startTime: string;
   endTime: string;
-  guests: number;
-  totalHours: number;
+  title: string;
+  category: string;
   hourlyRate: number;
   securityDeposit: number;
+  maxCapacity: number;
+  address: string;
+  imageUrl: string;
+  amenities: string[];
+  overview: string;
+  ownerEmail: string;
+  totalHours: number;
   totalAmount: number;
-  status: BookingStatus;
-  createdAt?: Date;
+  status: "pending" | "confirmed" | "cancelled" | "completed";
+  createdAt: string;
 }
