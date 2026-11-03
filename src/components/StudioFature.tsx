@@ -6,13 +6,8 @@ import { Button } from '@/components/ui/button';
 import { IStudio } from '@/type/Studio';
 import Link from 'next/link';
 
-// interface IStudioDetailsProps {
-//   studio: IStudio;
-// }
-
-// const StudioFature = async ({ studio }: IStudioDetailsProps) => {
 const StudioFature = async () => {
-  const res = await fetch("http://localhost:8000/studios");
+  const res = await fetch("http://localhost:8000/studio-featured");
   const studios = await res.json();
 
   return (
