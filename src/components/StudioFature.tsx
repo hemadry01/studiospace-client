@@ -4,11 +4,17 @@ import Image from 'next/image';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Button } from '@/components/ui/button';
 import { IStudio } from '@/type/Studio';
+import Link from 'next/link';
 
-const StudioFature = async() => {
+// interface IStudioDetailsProps {
+//   studio: IStudio;
+// }
+
+// const StudioFature = async ({ studio }: IStudioDetailsProps) => {
+const StudioFature = async () => {
   const res = await fetch("http://localhost:8000/studios");
-  const studio = await res.json();
-  
+  const studios = await res.json();
+
   return (
     <div className="mt-5">
       <div className=" px-6 lg:px-10">
@@ -20,7 +26,7 @@ const StudioFature = async() => {
         </p>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mt-6 px-6 lg:px-10">
-        {studio.slice(0, 6).map((studioItem: IStudio) => (
+        {studios.slice(0, 6).map((studioItem: IStudio) => (
           <Card
             key={studioItem._id}
             className="overflow-hidden bg-card/50 shadow-sm"
@@ -45,9 +51,11 @@ const StudioFature = async() => {
             </CardContent>
 
             <CardFooter className="p-3">
-              <Button variant="outline" size="sm" className="w-full">
-                View Details
-              </Button>
+              <Link href={`/studio/${studioItem._id}`}>
+                <Button variant="outline" size="sm" className="w-full">
+                  View Details
+                </Button>
+              </Link>
             </CardFooter>
           </Card>
         ))}

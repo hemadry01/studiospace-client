@@ -1,4 +1,5 @@
 import StudioDetails from "@/components/StudioDetails";
+import StudioFature from "@/components/StudioFature";
 import { Button } from "@/components/ui/button";
 import { IStudio } from "@/type/Studio";
 import Link from "next/link";
@@ -34,7 +35,11 @@ const SingleStudioPage = async ({ params }: ISingleStudioPageProps) => {
     );
   }
 
-  return <StudioDetails studio={studioData} />;
+  return (
+    <>
+      <StudioDetails studio={studioData} />
+    </>
+  );
 };
 
 export default SingleStudioPage;
