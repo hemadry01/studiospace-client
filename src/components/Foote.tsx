@@ -146,7 +146,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="relative overflow-hidden bg-[#101116] text-white mt-4">
+    <footer className="relative overflow-hidden bg-[#101116] text-white mt-1">
       {/* Background Gradient */}
       <div className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-purple-700/20 blur-[120px]" />
 
