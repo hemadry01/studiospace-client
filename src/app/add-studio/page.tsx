@@ -1,67 +1,69 @@
 "use client";
 
 import * as React from "react";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
-    CameraIcon,
-    LinkIcon,
-    LockIcon,
-    MailIcon,
-    MapPinIcon,
-    SendIcon,
-    UserIcon,
-    UsersIcon,
+  CameraIcon,
+  LinkIcon,
+  LockIcon,
+  MailIcon,
+  MapPinIcon,
+  SendIcon,
+  UserIcon,
+  UsersIcon,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
-    InputGroup,
-    InputGroupAddon,
-    InputGroupInput,
-    InputGroupText,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+  InputGroupText,
 } from "@/components/ui/input-group";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { authClient } from "@/lib/auth-client";
 
 const CATEGORIES = [
-    { value: "photo-studio", label: "Photo Studio" },
-    { value: "recording-space", label: "Recording Space" },
-    { value: "dance-studio", label: "Dance Studio" },
-    { value: "art-studio", label: "Art Studio" },
-    { value: "meeting-space", label: "Meeting Space" },
+  { value: "photo-studio", label: "Photo Studio" },
+  { value: "recording-space", label: "Recording Space" },
+  { value: "dance-studio", label: "Dance Studio" },
+  { value: "art-studio", label: "Art Studio" },
+  { value: "meeting-space", label: "Meeting Space" },
 ];
 
 const AMENITIES = [
-    "Wi-Fi",
-    "Air Conditioning",
-    "Lighting Equipment",
-    "Parking",
-    "Soundproofing",
-    "Kitchen",
+  "Wi-Fi",
+  "Air Conditioning",
+  "Lighting Equipment",
+  "Parking",
+  "Soundproofing",
+  "Kitchen",
 ];
-
-
 
 const initialAmenities = new Set(AMENITIES);
 
 function RequiredMark() {
-    return <span className="text-red-500">*</span>;
+  return <span className="text-red-500">*</span>;
 }
 
 function AddStudioPage() {
   const router = useRouter();
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
+  const userName = user?.name ?? "John Doe";
+  const userEmail = user?.email ?? "john.doe@example.com";
   const [title, setTitle] = React.useState("");
   const [category, setCategory] = React.useState<string>(CATEGORIES[0].value);
   const [hourlyRate, setHourlyRate] = React.useState("");
@@ -115,13 +117,15 @@ function AddStudioPage() {
         imageUrl,
         amenities: [...amenities],
         overview,
+        ownerName: userName,
+        ownerEmail: userEmail,
       }),
     });
 
     const data = await res.json();
-    if(res.ok){
-        console.log("Response from backend:", data);
-        redirect("/");
+    if (res.ok) {
+      console.log("Response from backend:", data);
+      router.push("/");
     }
   };
 
@@ -333,6 +337,39 @@ function AddStudioPage() {
               onChange={(e) => setOverview(e.target.value)}
               required
             />
+
+            {/* User Name / Email — read-only band */}
+            <div className="flex flex-col gap-3 rounded-xl bg-violet-100/80 px-5 py-4 sm:flex-row sm:items-center sm:gap-0">
+              <div className="flex flex-1 items-center gap-3">
+                <UserIcon className="size-5 shrink-0 text-slate-600" />
+                <div className="flex flex-col">
+                  <span className="text-xs text-slate-500">User Name</span>
+                  <span className="text-sm font-bold text-slate-900">
+                    {userName}
+                  </span>
+                </div>
+              </div>
+
+              <Separator
+                orientation="vertical"
+                className="hidden h-10 bg-violet-200 sm:block"
+              />
+
+              <div className="flex flex-1 items-center gap-3">
+                <MailIcon className="size-5 shrink-0 text-slate-600" />
+                <div className="flex flex-col">
+                  <span className="text-xs text-slate-500">User Email</span>
+                  <span className="text-sm font-bold text-slate-900">
+                    {userEmail}
+                  </span>
+                </div>
+              </div>
+
+              <Badge className="gap-1.5 rounded-full bg-violet-600 px-3 py-1 text-xs font-semibold text-white">
+                <LockIcon className="size-3" />
+                Read-only
+              </Badge>
+            </div>
           </div>
         </div>
 
@@ -357,6 +394,6 @@ function AddStudioPage() {
       </form>
     </div>
   );
-};
+}
 
 export default AddStudioPage;

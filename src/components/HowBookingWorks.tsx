@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   Search,
   Clock,
@@ -8,8 +9,6 @@ import {
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 
 const steps = [
   {
@@ -42,10 +41,13 @@ const steps = [
 
 export default function HowBookingWorks() {
   return (
-    <section className="bg-[#100B24] py-12 text-white md:py-14 mt-6">
+    <section
+      aria-labelledby="booking-heading"
+      className="mt-6 bg-[#100B24] py-12 text-white md:py-14"
+    >
       <div className="mx-auto max-w-7xl px-5 lg:px-10">
-        {/* Header */}
-        <div className="mb-8 text-center">
+        {/* Section Header */}
+        <header className="mb-8 text-center">
           <Badge
             variant="outline"
             className="mb-3 rounded-full border-purple-500/40 bg-purple-500/10 text-purple-300"
@@ -53,60 +55,66 @@ export default function HowBookingWorks() {
             Simple Process
           </Badge>
 
-          <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
+          <h2
+            id="booking-heading"
+            className="text-3xl font-bold tracking-tight md:text-4xl"
+          >
             How Booking <span className="text-purple-400">Works</span>
           </h2>
 
           <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-gray-400 md:text-base">
             Book your perfect creative space in four simple steps.
           </p>
-        </div>
+        </header>
 
-        {/* Steps */}
+        {/* Booking Steps */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {steps.map((step) => {
-            const Icon = step.icon;
-
-            return (
-              <Card
-                key={step.number}
-                className="group relative border-purple-500/20 bg-white/[0.04] text-white transition hover:-translate-y-1 hover:border-purple-500/60 hover:bg-purple-500/[0.06]"
-              >
-                <CardContent className="p-5">
-                  <div className="mb-5 flex items-center justify-between">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-purple-500/15">
-                      <Icon className="h-5 w-5 text-purple-400" />
-                    </div>
-
-                    <span className="text-3xl font-bold text-purple-500/20">
-                      {step.number}
-                    </span>
+          {steps.map(({ number, icon: Icon, title, description }) => (
+            <Card
+              key={number}
+              className="group border-purple-500/20 bg-white/[0.04] text-white transition-all duration-300 hover:-translate-y-1 hover:border-purple-500/60 hover:bg-purple-500/[0.06]"
+            >
+              <CardContent className="p-5">
+                <div className="mb-5 flex items-center justify-between">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-purple-500/15">
+                    <Icon
+                      aria-hidden="true"
+                      className="h-5 w-5 text-purple-400 transition-transform duration-300 group-hover:scale-110"
+                    />
                   </div>
 
-                  <h3 className="text-lg font-semibold">{step.title}</h3>
+                  <span
+                    aria-hidden="true"
+                    className="text-3xl font-bold text-purple-500/20"
+                  >
+                    {number}
+                  </span>
+                </div>
 
-                  <p className="mt-2 text-sm leading-6 text-gray-400">
-                    {step.description}
-                  </p>
+                <h3 className="text-lg font-semibold">{title}</h3>
 
-                  <div className="mt-4 h-1 w-10 rounded-full bg-purple-500 transition-all group-hover:w-16" />
-                </CardContent>
-              </Card>
-            );
-          })}
+                <p className="mt-2 text-sm leading-6 text-gray-400">
+                  {description}
+                </p>
+
+                <div className="mt-4 h-1 w-10 rounded-full bg-purple-500 transition-all duration-300 group-hover:w-16" />
+              </CardContent>
+            </Card>
+          ))}
         </div>
 
-        {/* CTA */}
-        <div className="mt-7 text-center">
-          <Button
-            asChild
-            className="rounded-full bg-purple-600 px-6 hover:bg-purple-700"
+        {/* Call to Action */}
+        <div className="mt-8 flex justify-center">
+          <Link
+            href="/studios"
+            className="group inline-flex items-center gap-2 rounded-full bg-purple-600 px-6 py-3 text-sm font-medium text-white transition-all duration-300 hover:bg-purple-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#100B24]"
           >
-            <Link href="/studios" className="inline-flex items-center">
-              Explore Studios
-              <ArrowRight className="ml-2 h-4 w-4 shrink-0" />
-            </Link>
-          </Button>
+            Explore Studios
+            <ArrowRight
+              aria-hidden="true"
+              className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
+            />
+          </Link>
         </div>
       </div>
     </section>

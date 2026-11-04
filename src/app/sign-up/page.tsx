@@ -16,17 +16,30 @@ import {
   FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import Link from "next/link";
 import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { redirect } from "next/navigation";
 
+const USER_ROLES = [
+  { value: "host", label: "Studio Owner" },
+  { value: "user", label: "Client" },
+];
+
 export default function SignUp() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [role, setRole] = useState<string>(USER_ROLES[0].value);
 
   const passwordMatch = password === confirmPassword;
 
@@ -44,18 +57,17 @@ export default function SignUp() {
       email: string;
       password: string;
     };
-    //console.log("User data:", user);
-
-    const { data, error } = await authClient.signUp.email({
-      ...user,
-    });
-    if (data) {
-      console.log("User signed up successfully:", data);
+    const signUpData = { ...user, role:role };
+    const { data, error } = await authClient.signUp.email(signUpData);
+    if(data){
+      console.log("User signed up successfully with role:", data);
       redirect("/");
     }
     if (error) {
       console.error("Error signing up user:", error);
+      return;
     }
+    
   };
 
   return (
@@ -113,7 +125,7 @@ export default function SignUp() {
                 <FieldLabel htmlFor="image">ImageURL</FieldLabel>
                 <Input
                   id="image"
-                  type="file"
+                  type="url"
                   name="image"
                   placeholder="Image URL"
                   required
@@ -131,6 +143,26 @@ export default function SignUp() {
                   pattern="[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}"
                   title="Please enter a valid email address (e.g. name@example.com)"
                 />
+              </Field>
+
+              {/* User Role Field */}
+              <Field>
+                <FieldLabel htmlFor="userRole">User Role</FieldLabel>
+                <Select
+                  value={role}
+                  onValueChange={(value) => setRole(value ?? "host")}
+                >
+                  <SelectTrigger id="userRole" className="w-full">
+                    <SelectValue placeholder="Select your role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {USER_ROLES.map((item) => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </Field>
 
               <Field>
