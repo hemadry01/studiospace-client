@@ -19,6 +19,7 @@ interface IStudioPromise {
 }
 
 const AllStudio = ({ studio }: IStudioPromise) => {
+  console.log(studio);
   const [isFavorite, setIsFavorite] = useState(false);
 
   return (

@@ -9,9 +9,21 @@ export interface IStudio {
   imageUrl: string;
   amenities: string[];
   overview: string;
-  ownerEmail: string;
+  email: string;
+  name: string;
   rating?: number;
   reviews?: number;
   images?: string[];
   timeSlots?: string[];
 }
+
+
+
+
+ 
+  
+  
+  
+
+ 
+  

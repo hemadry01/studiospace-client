@@ -15,7 +15,6 @@ import { Check, MapPin, Pencil, ShieldCheck, Star, Users } from "lucide-react";
 import { format } from "date-fns";
 import React, { useState } from "react";
 import { authClient } from "@/lib/auth-client";
-import { redirect } from "next/navigation";
 
 interface IStudioDetailsProps {
   studio: IStudio;
@@ -46,6 +45,7 @@ const GALLERY_LABELS = [
 ];
 
 const StudioDetails = ({ studio }: IStudioDetailsProps) => {
+  
   const [selectedDate, setSelectedDate] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
@@ -53,7 +53,9 @@ const StudioDetails = ({ studio }: IStudioDetailsProps) => {
   const [bookingDateError, setBookingDateError] = useState("");
   const [bookingTimeError, setBookingTimeError] = useState("");
 
-  const thumbnailImages = (studio.images ?? []).slice(0, 4);
+  // const thumbnailImages = (studio.images ?? []).slice(0, 4);
+  const thumbnailImages: string[] = [];
+  //////////////////////////////////////////
   const mainImageLabel = GALLERY_LABELS[0];
 
   const bookingHours =
@@ -137,7 +139,7 @@ const StudioDetails = ({ studio }: IStudioDetailsProps) => {
       `Booked ${bookingHours} ${bookingHours === 1 ? "hour" : "hours"} on ${format(
         new Date(selectedDate),
         "MMM d, yyyy"
-      )} · $${totalPrice} — confirmation sent to ${studio.ownerEmail}.`
+      )} · $${totalPrice} — confirmation sent to ${studio.email}.`
     );
   };
 
@@ -156,7 +158,6 @@ const StudioDetails = ({ studio }: IStudioDetailsProps) => {
       studioId: studio._id,
       studioTitle: studio.title,
       username: user?.name,
-      email: user?.email,
       bookingDate: selectedDate,
       startTime,
       endTime,
