@@ -1,6 +1,7 @@
 import { IStudio } from '@/type/Studio';
 import Image from 'next/image';
 import { Button } from "@/components/ui/button";
+import DeleteStudioDialog from './DeleteStudio';
 
 interface IStudioPromise {
   studio: IStudio;
@@ -44,9 +45,7 @@ const MyStudioListingsPage = ({ studio }: IStudioPromise) => {
         >
           Edit
         </Button>
-        <Button variant="destructive" size="sm" className="font-medium">
-          Delete
-        </Button>
+        <DeleteStudioDialog studio={studio} />
       </div>
     </div>
   );
