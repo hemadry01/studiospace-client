@@ -89,19 +89,7 @@ function AddStudioPage() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // TODO: wire up to the studio API once the backend is available.
-    // console.log("Add studio payload:", {
-    //     title,
-    //     category,
-    //     hourlyRate: Number(hourlyRate),
-    //     securityDeposit: Number(securityDeposit),
-    //     maxCapacity: Number(maxCapacity),
-    //     address,
-    //     imageUrl,
-    //     amenities: [...amenities],
-    //     overview,
-    //     ownerEmail: USER_EMAIL,
-    // });
+   
     const res = await fetch("http://localhost:8000/add-studio", {
       method: "POST",
       headers: {
