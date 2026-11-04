@@ -123,7 +123,7 @@ const Navbar = () => {
                       + Add Studio
                     </Link>
                     <Link
-                      href="/my-booking"
+                      href="/my-listings"
                       className="rounded-md px-3 py-2 text-sm font-medium  hover:text-violet-600"
                     >
                       My Studio Listings
