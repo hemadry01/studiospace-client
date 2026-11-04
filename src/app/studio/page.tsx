@@ -1,19 +1,25 @@
+
 import AllStudio from "@/components/AllStudio";
+import { auth } from "@/lib/auth";
 import { IStudio } from "@/type/Studio";
-import { Suspense } from "react";
+import { headers } from "next/headers";
 
 const StudioContent = async () => {
-  let studiodata: IStudio[] = [];
-  try{
-   const res = await fetch("http://localhost:8000/studios");
-   if (!res.ok) {
-          throw new Error("Faild to fatch data");
-      }
-      studiodata = await res.json();
-  } catch (error) {
-    console.error("Error fetching studio data:", error);
-  }
+ let studiodata: IStudio[] = [];
 
+   const session = await auth.api.getSession({
+     headers: await headers(),
+   });
+
+   const email = session?.user?.email;
+
+   if (!email) {
+     return <p>Please login first.</p>;
+   }
+   const res = await fetch(`http://localhost:8000/studios/${email}`, {
+     cache: "no-store",
+   });
+   studiodata = await res.json();
 
   return (
     <div className="container mx-auto px-4 py-10">
@@ -26,12 +32,12 @@ const StudioContent = async () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {studiodata.map((studio:IStudio) => (
+        {studiodata.map((studio: IStudio) => (
           <AllStudio key={studio._id} studio={studio} />
         ))}
       </div>
     </div>
   );
-}
+};
 
 export default StudioContent;

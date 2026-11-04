@@ -117,12 +117,13 @@ function AddStudioPage() {
         imageUrl,
         amenities: [...amenities],
         overview,
-        ownerName: userName,
-        ownerEmail: userEmail,
+        name: userName,
+        email: userEmail,
       }),
     });
 
     const data = await res.json();
+    console.log(data);
     if (res.ok) {
       console.log("Response from backend:", data);
       router.push("/");
