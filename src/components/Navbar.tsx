@@ -21,7 +21,8 @@ const Navbar = () => {
   const {data: session} = authClient.useSession();
 
   const user = session?.user;
-  console.log("User data:", user);
+  const role = session?.user?.role;
+  console.log("User data:", role);
 
   const handleSignOut = async () => {
     try {
@@ -38,7 +39,8 @@ const Navbar = () => {
     { name: "Explore Studio", href: "/studio" },
     { name: "How It Works", href: "/how-it-works" },
     { name: "About Us", href: "/about" },
-    { name: "Add Studio", href: "/add-studio" },
+    // { name: "Add Studio", href: "/add-studio" },
+    ...(role === "host" ?[{ name: "Add Studio", href: "/add-studio" }]:[]),
   ];
 
   return (
@@ -115,25 +117,31 @@ const Navbar = () => {
                     >
                       My Profile
                     </Link>
+                    {role === "host" && (
+                      <Link
+                        href="/add-studio"
+                        className="rounded-md px-3 py-2 text-sm font-medium hover:text-violet-600"
+                      >
+                        + Add Studio
+                      </Link>
+                    )}
+                    {role === "host" && (
+                      <Link
+                        href="/my-listings"
+                        className="rounded-md px-3 py-2 text-sm font-medium  hover:text-violet-600"
+                      >
+                        My Studio Listings
+                      </Link>
+                    )}
+                    {role === "user" && (
 
-                    <Link
-                      href="/add-studio"
-                      className="rounded-md px-3 py-2 text-sm font-medium  hover:text-violet-600"
-                    >
-                      + Add Studio
-                    </Link>
-                    <Link
-                      href="/my-listings"
-                      className="rounded-md px-3 py-2 text-sm font-medium  hover:text-violet-600"
-                    >
-                      My Studio Listings
-                    </Link>
-                    <Link
-                      href="/add-studio"
-                      className="rounded-md px-3 py-2 text-sm font-medium  hover:text-violet-600"
-                    >
-                      My Bookings
-                    </Link>
+                      <Link
+                        href="/add-studio"
+                        className="rounded-md px-3 py-2 text-sm font-medium  hover:text-violet-600"
+                      >
+                        My Bookings
+                      </Link>
+                    )}
 
                     <Link
                       href="/settings"
