@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { IBooking } from "@/type/Booking";
 import Image from "next/image";
+import DeleteMyBookingItem from "./DeleteMyBookingItem";
 
 const statusStyles: Record<IBooking["status"], { label: string; className: string }> = {
   pending: {
@@ -50,7 +51,9 @@ const MyBookings = ({ booking }: { booking: IBooking }) => {
         <h3 className="truncate text-lg font-semibold text-slate-900 sm:text-xl">
           {booking.title}
         </h3>
-        <Badge className={`mt-1.5 border-0 ${status.className}`}>{status.label}</Badge>
+        <Badge className={`mt-1.5 border-0 ${status.className}`}>
+          {status.label}
+        </Badge>
         <p className="mt-1.5 truncate text-xs text-slate-500 sm:text-sm">
           {booking.category} · ${booking.hourlyRate}/hr
         </p>
@@ -64,9 +67,10 @@ const MyBookings = ({ booking }: { booking: IBooking }) => {
         >
           Edit
         </Button>
-        <Button variant="destructive" size="sm" className="font-medium">
-          Delete
-        </Button>
+        <DeleteMyBookingItem booking={booking} />
+        {/* <Button variant="destructive" size="sm" className="font-medium">
+          Cancel
+        </Button> */}
       </div>
     </div>
   );

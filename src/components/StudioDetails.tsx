@@ -15,6 +15,7 @@ import { Check, MapPin, Pencil, ShieldCheck, Star, Users } from "lucide-react";
 import { format } from "date-fns";
 import React, { useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 interface IStudioDetailsProps {
   studio: IStudio;
@@ -52,6 +53,7 @@ const StudioDetails = ({ studio }: IStudioDetailsProps) => {
   const [bookingSummary, setBookingSummary] = useState<string | null>(null);
   const [bookingDateError, setBookingDateError] = useState("");
   const [bookingTimeError, setBookingTimeError] = useState("");
+  const router = useRouter();
 
   // const thumbnailImages = (studio.images ?? []).slice(0, 4);
   const thumbnailImages: string[] = [];
@@ -181,8 +183,10 @@ const StudioDetails = ({ studio }: IStudioDetailsProps) => {
       const bookingData= await res.json();
       if (!res.ok) {
         throw new Error(bookingData.message || "Booking failed");
+      }else{
+        router.push("/studio");
+        console.log("Saved booking:",bookingData)
       }
-      console.log("Saved booking:",bookingData)
     }catch(e){
       console.error(e);
     }
