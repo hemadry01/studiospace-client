@@ -145,7 +145,7 @@ const StudioDetails = ({ studio }: IStudioDetailsProps) => {
 
    const { data: session } = authClient.useSession();
    const user = session?.user;
-
+    console.log("User email",user);
   const handleSubmitBooking = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Validate fields
@@ -154,14 +154,15 @@ const StudioDetails = ({ studio }: IStudioDetailsProps) => {
       return;
     }
     // Prepare booking data
+    const { email: studioEmail, ...studioData } = studio;
     const data = {
+      ...studioData,
       studioId: studio._id,
       studioTitle: studio.title,
-      username: user?.name,
+      email: user?.email,
       bookingDate: selectedDate,
       startTime,
       endTime,
-      ...studio,
       totalHours: bookingHours,
       hourlyRate: studio.hourlyRate,
       securityDeposit: studio.securityDeposit,

@@ -136,7 +136,7 @@ const Navbar = () => {
                     {role === "user" && (
 
                       <Link
-                        href="/add-studio"
+                        href="/my-booking"
                         className="rounded-md px-3 py-2 text-sm font-medium  hover:text-violet-600"
                       >
                         My Bookings

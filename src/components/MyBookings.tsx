@@ -23,6 +23,7 @@ const statusStyles: Record<IBooking["status"], { label: string; className: strin
 };
 
 const MyBookings = ({ booking }: { booking: IBooking }) => {
+  console.log("my Booking",booking);
   const status = statusStyles[booking.status] ?? statusStyles.pending;
 
   return (
