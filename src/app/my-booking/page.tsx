@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth";
 import { IBooking } from "@/type/Booking";
 import { headers } from "next/headers";
 
-const MyBookingPage = async() => {
+const MyBookingPage = async () => {
   let bookingData: IBooking[] = [];
   const session = await auth.api.getSession({
     headers: await headers(),
