@@ -70,194 +70,235 @@ export default function SignUp() {
     
   };
 
-  return (
-    <div className="flex flex-col gap-6 max-w-6x mx-auto my-10">
-      <Card>
-        <CardHeader className="text-center">
-          <CardTitle className="text-xl">Create an account</CardTitle>
+  const handleGoogleSignIn = async()=>{
+    const data = await authClient.signIn.social({
+      provider:"google"
+    })
+    console.log(data)
+  }
+
+  
+return (
+  <div className="min-h-screen flex items-center justify-center bg-muted/40 px-4 py-10">
+    <div className="w-full max-w-md">
+      <Card className="border shadow-lg rounded-2xl">
+        <CardHeader className="space-y-2 text-center pb-6">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground text-xl font-bold">
+            S
+          </div>
+
+          <CardTitle className="text-2xl font-bold">
+            Create an account
+          </CardTitle>
+
           <CardDescription>
-            Login with your Facebook or Google account
+            Join us today! Create your account to get started.
           </CardDescription>
         </CardHeader>
 
-        <CardContent>
-          <form onSubmit={handleSubmit}>
-            <FieldGroup>
-              <Field>
-                <Button variant="outline" type="button">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                  >
-                    <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073c0 6.02 4.388 11.015 10.125 11.927v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.49 0-1.956.93-1.956 1.886v2.268h3.328l-.532 3.49h-2.796V24C19.612 23.088 24 18.093 24 12.073Z" />
-                  </svg>
-                  Login with Facebook
-                </Button>
+        <CardContent className="space-y-6">
+          {/* Social Login Buttons */}
+          <div className="grid grid-cols-2 gap-3">
+            <Button variant="outline" type="button" className="h-11 gap-2">
+              <svg
+                viewBox="0 0 24 24"
+                className="h-5 w-5 text-[#1877F2]"
+                fill="currentColor"
+              >
+                <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073c0 6.02 4.388 11.015 10.125 11.927v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.49 0-1.956.93-1.956 1.886v2.268h3.328l-.532 3.49h-2.796V24C19.612 23.088 24 18.093 24 12.073Z" />
+              </svg>
+              Facebook
+            </Button>
 
-                <Button variant="outline" type="button">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path
-                      d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                  Login with Google
-                </Button>
-              </Field>
-
-              <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
-                Or continue with
-              </FieldSeparator>
-
-              <Field>
-                <FieldLabel htmlFor="name">Name</FieldLabel>
-                <Input
-                  id="name"
-                  type="text"
-                  name="name"
-                  placeholder="Name"
-                  required
+            <Button
+              onClick={handleGoogleSignIn}
+              variant="outline"
+              type="button"
+              className="h-11 gap-2"
+            >
+              <svg viewBox="0 0 24 24" className="h-5 w-5">
+                <path
+                  fill="#4285F4"
+                  d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
                 />
-              </Field>
+              </svg>
+              Google
+            </Button>
+          </div>
 
-              <Field>
-                <FieldLabel htmlFor="image">ImageURL</FieldLabel>
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-3 text-muted-foreground">
+                Or continue with email
+              </span>
+            </div>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Field>
+              <FieldLabel htmlFor="name">Full Name</FieldLabel>
+              <Input
+                id="name"
+                name="name"
+                placeholder="Enter your full name"
+                required
+                className="h-11"
+              />
+            </Field>
+
+            <Field>
+              <FieldLabel htmlFor="image">Profile Image URL</FieldLabel>
+              <Input
+                id="image"
+                type="url"
+                name="image"
+                placeholder="https://example.com/image.jpg"
+                required
+                className="h-11"
+              />
+            </Field>
+
+            <Field>
+              <FieldLabel htmlFor="email">Email Address</FieldLabel>
+              <Input
+                id="email"
+                type="email"
+                name="email"
+                placeholder="name@example.com"
+                required
+                pattern="[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,}"
+                title="Please enter a valid email address"
+                className="h-11"
+              />
+            </Field>
+
+            <Field>
+              <FieldLabel htmlFor="userRole">Account Type</FieldLabel>
+              <Select
+                value={role}
+                onValueChange={(value) => setRole(value ?? "host")}
+              >
+                <SelectTrigger id="userRole" className="h-11 w-full">
+                  <SelectValue placeholder="Select account type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {USER_ROLES.map((item) => (
+                    <SelectItem key={item.value} value={item.value}>
+                      {item.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
+
+            <Field>
+              <FieldLabel htmlFor="password">Password</FieldLabel>
+              <div className="relative">
                 <Input
-                  id="image"
-                  type="url"
-                  name="image"
-                  placeholder="Image URL"
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Create a password"
                   required
+                  minLength={6}
+                  pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{6,}"
+                  title="Password must include uppercase, lowercase, number and special character."
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="h-11 pr-10"
                 />
-              </Field>
 
-              <Field>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
-                <Input
-                  id="email"
-                  type="email"
-                  name="email"
-                  placeholder="m@example.com"
-                  required
-                  pattern="[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}"
-                  title="Please enter a valid email address (e.g. name@example.com)"
-                />
-              </Field>
-
-              {/* User Role Field */}
-              <Field>
-                <FieldLabel htmlFor="userRole">User Role</FieldLabel>
-                <Select
-                  value={role}
-                  onValueChange={(value) => setRole(value ?? "host")}
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                 >
-                  <SelectTrigger id="userRole" className="w-full">
-                    <SelectValue placeholder="Select your role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {USER_ROLES.map((item) => (
-                      <SelectItem key={item.value} value={item.value}>
-                        {item.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </Field>
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            </Field>
 
-              <Field>
-                <FieldLabel htmlFor="password">Password</FieldLabel>
+            <Field>
+              <FieldLabel htmlFor="confirmPassword">
+                Confirm Password
+              </FieldLabel>
 
-                <div className="relative">
-                  <Input
-                    id="password"
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Password"
-                    required
-                    minLength={6}
-                    pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{6,}"
-                    title="Password must be at least 6 characters and include uppercase, lowercase, number, and special character."
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="pr-10"
-                  />
+              <div className="relative">
+                <Input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="Confirm your password"
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  aria-invalid={confirmPassword.length > 0 && !passwordMatch}
+                  className="h-11 pr-10"
+                />
 
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800"
-                    aria-label={
-                      showPassword ? "Hide password" : "Show password"
-                    }
-                  >
-                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                  </button>
-                </div>
-              </Field>
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  aria-label={
+                    showConfirmPassword ? "Hide password" : "Show password"
+                  }
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff size={18} />
+                  ) : (
+                    <Eye size={18} />
+                  )}
+                </button>
+              </div>
 
-              {/* Confirm Password Field */}
-              <Field>
-                <FieldLabel htmlFor="confirmPassword">
-                  Confirm Password
-                </FieldLabel>
+              {confirmPassword.length > 0 && (
+                <p
+                  className={`text-xs ${
+                    passwordMatch ? "text-green-600" : "text-red-500"
+                  }`}
+                >
+                  {passwordMatch
+                    ? "Passwords match!"
+                    : "Passwords do not match!"}
+                </p>
+              )}
+            </Field>
 
-                <div className="relative">
-                  <Input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
-                    placeholder="Confirm Password"
-                    required
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    aria-invalid={confirmPassword.length > 0 && !passwordMatch}
-                    className="pr-10"
-                  />
-
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800"
-                    aria-label={
-                      showConfirmPassword ? "Hide password" : "Show password"
-                    }
-                  >
-                    {showConfirmPassword ? (
-                      <EyeOff size={20} />
-                    ) : (
-                      <Eye size={20} />
-                    )}
-                  </button>
-                </div>
-
-                {confirmPassword.length > 0 && !passwordMatch && (
-                  <p className="text-sm text-red-500">
-                    Passwords do not match!
-                  </p>
-                )}
-
-                {confirmPassword.length > 0 && passwordMatch && (
-                  <p className="text-sm text-green-600">Passwords match!</p>
-                )}
-              </Field>
-
-              <Field>
-                <Button type="submit">SignUp</Button>
-
-                <FieldDescription className="text-center">
-                  Have an account? <Link href="/login">Login</Link>
-                </FieldDescription>
-              </Field>
-            </FieldGroup>
+            <Button type="submit" className="w-full h-11 font-semibold">
+              Create Account
+            </Button>
           </form>
+
+          <p className="text-center text-sm text-muted-foreground">
+            Already have an account?{" "}
+            <Link
+              href="/login"
+              className="font-semibold text-primary hover:underline"
+            >
+              Login
+            </Link>
+          </p>
         </CardContent>
       </Card>
 
-      <FieldDescription className="px-6 text-center">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="#">Privacy Policy</a>.
-      </FieldDescription>
+      <p className="mt-5 text-center text-xs text-muted-foreground">
+        By creating an account, you agree to our{" "}
+        <Link href="#" className="underline hover:text-primary">
+          Terms of Service
+        </Link>{" "}
+        and{" "}
+        <Link href="#" className="underline hover:text-primary">
+          Privacy Policy
+        </Link>
+        .
+      </p>
     </div>
-  );
+  </div>
+);
+
 }
