@@ -34,6 +34,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { authClient } from "@/lib/auth-client";
+import { toast } from "react-toastify";
 
 const CATEGORIES = [
   { value: "photo-studio", label: "Photo Studio" },
@@ -111,9 +112,8 @@ function AddStudioPage() {
     });
 
     const data = await res.json();
-    console.log(data);
     if (res.ok) {
-      console.log("Response from backend:", data);
+      toast.success("add new studio data");
       router.push("/");
     }
   };

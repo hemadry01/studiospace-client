@@ -9,19 +9,11 @@ const MyBookingPage = async() => {
       headers: await headers(),
     });
     const email = session?.user?.email;
-    // const res = await fetch(
-    //   `http://localhost:8000/my-booking/${user?.email}`,
-    //   { cache: "no-store" },
-    // );
-    // const bookingData: IBooking[] = res.ok
-    //   ? await res.json().catch(() => [])
-    //   : [];
 
     const res = await fetch(`http://localhost:8000/my-booking/${email}`, {
       cache: "no-store",
     });
      bookingData = await res.json()
-    console.log("bookingData", bookingData);
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-12">

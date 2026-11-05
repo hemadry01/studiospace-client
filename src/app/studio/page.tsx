@@ -3,6 +3,8 @@ import AllStudio from "@/components/AllStudio";
 import { auth } from "@/lib/auth";
 import { IStudio } from "@/type/Studio";
 import { headers } from "next/headers";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const StudioContent = async () => {
  let studiodata: IStudio[] = [];
@@ -15,7 +17,16 @@ const StudioContent = async () => {
    const user = session?.user?.role;
 
    if (!email) {
-     return <p>Please login first.</p>;
+     return (
+              <div className="container mx-auto flex flex-col items-center gap-4 px-4 py-24 text-center">
+                <h1 className="text-2xl font-bold">Studio Feature not found</h1>
+                <p className="text-sm text-muted-foreground">
+                  We could not load this studio. It may have been removed, or the
+                  server is temporarily unavailable.
+                </p>
+                <Button className="bg-violet-600" render={<Link href="/login" />}>Back to Login Studios</Button>
+              </div>
+            );
    }
 
     if (user === "host"){

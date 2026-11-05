@@ -28,6 +28,7 @@ import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { redirect } from "next/navigation";
+import { toast } from "react-toastify";
 
 const USER_ROLES = [
   { value: "host", label: "Studio Owner" },
@@ -47,7 +48,7 @@ export default function SignUp() {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      alert("Password and Confirm Password do not match!");
+      toast.error("Password and Confirm Password do not match!");
       return;
     }
     const formData = new FormData(e.currentTarget);
@@ -60,11 +61,11 @@ export default function SignUp() {
     const signUpData = { ...user, role:role };
     const { data, error } = await authClient.signUp.email(signUpData);
     if(data){
-      console.log("User signed up successfully with role:", data);
+      toast.success("User signed up successfully");
       redirect("/");
     }
     if (error) {
-      console.error("Error signing up user:", error);
+      toast.error("Error signing up user");
       return;
     }
     

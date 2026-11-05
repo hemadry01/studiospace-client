@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { IBooking } from "@/type/Booking";
 import { Trash2 } from "lucide-react";
 import { redirect } from "next/navigation";
+import { toast } from "react-toastify";
 
 interface IDeleteMyBookingItemProps {
   booking: IBooking;
@@ -26,7 +27,10 @@ const DeleteMyBookingItem = ({ booking }: IDeleteMyBookingItemProps) => {
       method: "DELETE",
     });
     const data = await res.json();
-    redirect("/my-booking");
+    if(data){
+      toast.warn("Booking delete in list")
+      redirect("/my-booking");
+    }
   };
   return (
     <div>

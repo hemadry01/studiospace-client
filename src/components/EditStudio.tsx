@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -8,11 +10,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Pencil } from "lucide-react";
-import React, { useState } from "react";
-import { PackageCheck, Trash2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+  InputGroupText,
+} from "@/components/ui/input-group";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -23,28 +26,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { IStudio } from "@/type/Studio";
+import { useRouter } from "next/navigation";
 import {
   CameraIcon,
   LinkIcon,
-  LockIcon,
-  MailIcon,
   MapPinIcon,
+  Pencil,
   SendIcon,
-  UserIcon,
   UsersIcon,
 } from "lucide-react";
-
-import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-  InputGroupText,
-} from "@/components/ui/input-group";
-
-import { Separator } from "@/components/ui/separator";
+import { useState } from "react";
+import { IStudio } from "@/type/Studio";
+import { toast } from "react-toastify";
 
 const CATEGORIES = [
   { value: "photo-studio", label: "Photo Studio" },
@@ -63,75 +56,68 @@ const AMENITIES = [
   "Kitchen",
 ];
 
-const initialAmenities = new Set(AMENITIES);
-
-interface IEditStudioProps{
-    studio:IStudio
+interface IEditStudioProps {
+  studio: IStudio;
 }
 
-const EditStudioDialog = ({ studio }:IEditStudioProps) => {
+const EditStudioDialog = ({ studio }: IEditStudioProps) => {
+  const router = useRouter();
 
-      const router = useRouter();
-    //   const { data: session } = authClient.useSession();
-    //   const user = session?.user;
-    //   const userName = user?.name ?? "John Doe";
-    //   const userEmail = user?.email ?? "john.doe@example.com";
-      const [title, setTitle] = React.useState("");
-      const [category, setCategory] = React.useState<string>(CATEGORIES[0].value);
-      const [hourlyRate, setHourlyRate] = React.useState("");
-      const [securityDeposit, setSecurityDeposit] = React.useState("");
-      const [maxCapacity, setMaxCapacity] = React.useState("");
-      const [address, setAddress] = React.useState("");
-      const [imageUrl, setImageUrl] = React.useState("");
-      const [amenities, setAmenities] =
-        React.useState<Set<string>>(initialAmenities);
-      const [overview, setOverview] = React.useState("");
-    
-      const toggleAmenity = (amenity: string, checked: boolean) => {
-        setAmenities((prev) => {
-          const next = new Set(prev);
-          if (checked) {
-            next.add(amenity);
-          } else {
-            next.delete(amenity);
-          }
-          return next;
-        });
-      };
-    
-      const [form, setForm] = useState(studio);
-      const update = (field: keyof typeof form, value: string) =>
-        setForm((current) => ({ ...current, [field]: value }));
+  const [form, setForm] = useState<IStudio>(studio);
+  const [amenities, setAmenities] = useState<Set<string>>(
+    new Set(studio.amenities)
+  );
 
-    const handleSubmit = async(e:React.FormEvent<HTMLFormElement>)=>{
-            e.preventDefault();
-            const { _id, ...updatedData } = form;
-           const res =  await fetch(`http://localhost:8000/studios/${studio._id}`, {
-              method: "PATCH",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(updatedData),
-            });
-            const data = await res.json();
-            console.log(data);
+  const update = (field: keyof IStudio, value: string) =>
+    setForm((current) => ({ ...current, [field]: value }));
+
+  const toggleAmenity = (amenity: string, checked: boolean) => {
+    setAmenities((prev) => {
+      const next = new Set(prev);
+      if (checked) {
+        next.add(amenity);
+      } else {
+        next.delete(amenity);
+      }
+      return next;
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const { _id, ...updatedData } = form;
+    const res = await fetch(`http://localhost:8000/studios/${studio._id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ ...updatedData, amenities: [...amenities] }),
+    });
+    if (res.ok) {
+      toast.success("Successfuly studio data update")
+      router.refresh();
+      router.push("/my-listings");
     }
+  };
+
   return (
     <Dialog>
-      <DialogTrigger>
-        <Button variant="outline">
-          <Pencil />
-          Edit
-        </Button>
+      <DialogTrigger
+        render={<Button variant="outline" className="flex items-center gap-2" />}
+      >
+        <Pencil />
+        Edit
       </DialogTrigger>
-      <DialogContent className={"min-w-4xl"}>
+      <DialogContent className="min-w-4xl">
         <DialogHeader>
           <DialogTitle>Edit Studio</DialogTitle>
           <DialogDescription>
-            <form
-              onSubmit={handleSubmit}
-              className="mt-10 rounded-sm border border-border bg-white p-8 shadow-sm"
-            >
+            Update your studio details below and publish the changes.
+          </DialogDescription>
+          <form
+            onSubmit={handleSubmit}
+            className="mt-6 rounded-sm border border-border bg-white p-8 shadow-sm"
+          >
               <div className="grid gap-x-6 gap-y-5 md:grid-cols-2">
                 {/* Studio Title */}
                 <div className="flex flex-col gap-2">
@@ -156,7 +142,7 @@ const EditStudioDialog = ({ studio }:IEditStudioProps) => {
                   </Label>
                   <Select
                     value={form.category}
-                    onValueChange={(value) => update("category", value ?? "")}
+                    onValueChange={(value) => update("category", String(value))}
                     items={CATEGORIES}
                   >
                     <SelectTrigger
@@ -168,7 +154,7 @@ const EditStudioDialog = ({ studio }:IEditStudioProps) => {
                     </SelectTrigger>
                     <SelectContent>
                       {CATEGORIES.map((item) => (
-                        <SelectItem key={item.value} value={form.category}>
+                        <SelectItem key={item.value} value={item.value}>
                           {item.label}
                         </SelectItem>
                       ))}
@@ -298,7 +284,7 @@ const EditStudioDialog = ({ studio }:IEditStudioProps) => {
                           className="size-5 rounded-md data-checked:bg-violet-600 data-checked:border-violet-600"
                           checked={amenities.has(amenity)}
                           onCheckedChange={(checked) =>
-                            toggleAmenity(amenity, checked)
+                            toggleAmenity(amenity, Boolean(checked))
                           }
                         />
                         <span>{amenity}</span>
@@ -342,7 +328,6 @@ const EditStudioDialog = ({ studio }:IEditStudioProps) => {
                 </Button>
               </div>
             </form>
-          </DialogDescription>
         </DialogHeader>
       </DialogContent>
     </Dialog>

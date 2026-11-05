@@ -64,9 +64,6 @@ const MyBookings = ({ booking }: { booking: IBooking }) => {
        
         <EditMyBookingItem booking={booking} />
         <DeleteMyBookingItem booking={booking} />
-        {/* <Button variant="destructive" size="sm" className="font-medium">
-          Cancel
-        </Button> */}
       </div>
     </div>
   );

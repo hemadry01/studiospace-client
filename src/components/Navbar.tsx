@@ -15,9 +15,11 @@ import {
   PopoverTitle,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
-
+  const router = useRouter();
   const {data: session} = authClient.useSession();
 
   const user = session?.user;
@@ -27,8 +29,11 @@ const Navbar = () => {
   const handleSignOut = async () => {
     try {
       await authClient.signOut();
+      toast.success("Sign Out is Sucessfully");
+      router.push("/");
+      router.refresh();
     } catch (error) {
-      console.error("Error signing out:", error);
+      toast.error("Error signing out");
     }
   };
 
