@@ -1,6 +1,8 @@
 import StudioDetails from "@/components/StudioDetails";
 import { Button } from "@/components/ui/button";
+import { auth } from "@/lib/auth";
 import { IStudio } from "@/type/Studio";
+import { headers } from "next/headers";
 import Link from "next/link";
 
 interface ISingleStudioPageProps {
@@ -10,9 +12,19 @@ interface ISingleStudioPageProps {
 const SingleStudioPage = async ({ params }: ISingleStudioPageProps) => {
   const { studioId } = await params;
 
+  const jwtToken = await auth.api.getToken({
+    headers: await headers()
+  });
+  const token = jwtToken?.token
+  //console.log(token);
+
   let studioData: IStudio | null = null;
   try {
-    const res = await fetch(`http://localhost:8000/studios/${studioId}`);
+    const res = await fetch(`http://localhost:8000/studios/${studioId}`,{
+      headers:{
+        authorization:`Bearer ${token}`
+      }
+    });
     if (!res.ok) {
       throw new Error("Failed to fetch studio data");
     }

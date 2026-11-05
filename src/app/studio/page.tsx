@@ -30,9 +30,7 @@ const StudioContent = async () => {
    }
 
     if (user === "host"){
-        const res = await fetch(`http://localhost:8000/studios/${email}`, {
-          cache: "no-store",
-        });
+        const res = await fetch(`http://localhost:8000/studios/${email}`);
         studiodata = await res.json();
     }else{
       const res = await fetch("http://localhost:8000/studios", {

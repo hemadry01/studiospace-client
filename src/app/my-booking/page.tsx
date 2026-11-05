@@ -4,16 +4,25 @@ import { IBooking } from "@/type/Booking";
 import { headers } from "next/headers";
 
 const MyBookingPage = async() => {
-   let bookingData: IBooking[] = [];
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-    const email = session?.user?.email;
+  let bookingData: IBooking[] = [];
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+  const email = session?.user?.email;
 
-    const res = await fetch(`http://localhost:8000/my-booking/${email}`, {
-      cache: "no-store",
-    });
-     bookingData = await res.json()
+  const jwtToken = await auth.api.getToken({
+    headers: await headers(),
+  });
+  const token = jwtToken?.token;
+  //console.log(token);
+
+  const res = await fetch(`http://localhost:8000/my-booking/${email}`, {
+    cache: "no-store",
+    headers: {
+      authorization: `Bearer ${token}`,
+    },
+  });
+  bookingData = await res.json();
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
@@ -31,15 +40,16 @@ const MyBookingPage = async() => {
         {bookingData.length > 0 ? (
           bookingData.map((booking: IBooking) => {
             return (
-              <div key={booking._id} className="border-b border-slate-100 last:border-b-0">
+              <div
+                key={booking._id}
+                className="border-b border-slate-100 last:border-b-0"
+              >
                 <MyBookings booking={booking} />
               </div>
             );
           })
         ) : (
-          <p className="text-sm text-gray-500">
-            No bookings found.
-          </p>
+          <p className="text-sm text-gray-500">No bookings found.</p>
         )}
       </div>
     </div>

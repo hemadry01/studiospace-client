@@ -89,12 +89,17 @@ function AddStudioPage() {
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    
     event.preventDefault();
-   
+
+   const {data,error} = await authClient.token();
+   const token = data?.token
+   console.log(data)
     const res = await fetch("http://localhost:8000/add-studio", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        authorization:`Bearer ${token}` 
       },
       body: JSON.stringify({
         title,
@@ -111,7 +116,7 @@ function AddStudioPage() {
       }),
     });
 
-    const data = await res.json();
+    const result = await res.json();
     if (res.ok) {
       toast.success("add new studio data");
       router.push("/");

@@ -150,6 +150,8 @@ const StudioDetails = ({ studio }: IStudioDetailsProps) => {
     console.log("User email",user);
   const handleSubmitBooking = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const {data}=await authClient.token();
+     const token = data?.token
     // Validate fields
     if (!selectedDate || !startTime || !endTime) {
       //toast.error("Please select date and time");
@@ -157,7 +159,7 @@ const StudioDetails = ({ studio }: IStudioDetailsProps) => {
     }
     // Prepare booking data
     const { email: studioEmail, ...studioData } = studio;
-    const data = {
+    const submitdata = {
       ...studioData,
       studioId: studio._id,
       studioTitle: studio.title,
@@ -172,13 +174,15 @@ const StudioDetails = ({ studio }: IStudioDetailsProps) => {
       status: "pending",
       createdAt: new Date(),
     };
+      
     try{
       const res = await fetch("http://localhost:8000/my-bookings", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
+          authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(submitdata),
       });
       const bookingData= await res.json();
       if (!res.ok) {
