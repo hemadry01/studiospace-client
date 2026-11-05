@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { IBooking } from "@/type/Booking";
 import Image from "next/image";
 import DeleteMyBookingItem from "./DeleteMyBookingItem";
+import EditMyBookingItem from "./EditMyBookingItem";
 
 const statusStyles: Record<IBooking["status"], { label: string; className: string }> = {
   pending: {
@@ -60,13 +61,8 @@ const MyBookings = ({ booking }: { booking: IBooking }) => {
       </div>
 
       <div className="flex shrink-0 items-center gap-1 sm:gap-3">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="font-medium text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700"
-        >
-          Edit
-        </Button>
+       
+        <EditMyBookingItem booking={booking} />
         <DeleteMyBookingItem booking={booking} />
         {/* <Button variant="destructive" size="sm" className="font-medium">
           Cancel
